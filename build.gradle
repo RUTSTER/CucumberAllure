@@ -1,0 +1,54 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
+
+    // Cucumber: Annotations
+    // https://mvnrepository.com/artifact/io.cucumber/cucumber-java
+    testImplementation group: 'io.cucumber', name: 'cucumber-java', version: '4.8.1'
+
+    // Cucumber: Lambdas
+    // https://mvnrepository.com/artifact/io.cucumber/cucumber-java8
+    testImplementation group: 'io.cucumber', name: 'cucumber-java8', version: '4.8.1'
+
+
+    // Cucumber: PicoContainer for DI
+    // https://mvnrepository.com/artifact/io.cucumber/cucumber-picocontainer
+    testImplementation group: 'io.cucumber', name: 'cucumber-picocontainer', version: '4.8.1'
+
+
+    // Allure plugin
+    testImplementation group: 'io.qameta.allure', name: 'allure-cucumber4-jvm', version: '2.13.2'
+
+    // Selenium WebDriver
+    testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.141.59'
+}
+
+
+configurations {
+    cucumberRuntime {
+        extendsFrom testImplementation
+    }
+}
+
+task cucumberRun(type: JavaExec, dependsOn: [assemble, compileTestJava]) {
+    main = "io.cucumber.core.cli.Main"
+    classpath = configurations.cucumberRuntime + sourceSets.test.output
+
+    args = [
+            '--glue', 'steps',
+            '--plugin', 'io.qameta.allure.cucumber4jvm.AllureCucumber4Jvm',
+            'src/test/resources/features/TestsExample.feature'
+    ]
+}
